@@ -2,8 +2,7 @@
 
 **Stack Tecnológico (Demo):** Java (Swing + JDBC) + MySQL  
 **Patrón Arquitectónico:** Modelo-Vista-Controlador (MVC) + Capa DAO/Repositorio  
-**Referencia de Diseño:** Basado en el patrón arquitectónico del proyecto *AutoTechSolutions*  
-**Estado:** Fase de Análisis Estratégico y Documentación de Diseño (Sin código fuente aún)
+**Estado:** Demo Funcional MVP (Java 17 + MySQL)
 
 ---
 
@@ -22,7 +21,7 @@ El sistema ataca directamente la **paradoja burocrática de Honduras** (1,933 ho
 
 ## 2. Arquitectura del Software (Patrón MVC + MySQL DAO)
 
-Siguiendo la estructura limpia de paquetes de *AutoTechSolutions*, adaptada de memoria RAM a persistencia **MySQL** vía **JDBC**:
+El proyecto se organiza en paquetes bajo el patrón MVC con persistencia **MySQL** vía **JDBC**:
 
 * **`main`**: Clase `Main.java` encargada de inicializar el Look & Feel (Nimbus), verificar la conexión a MySQL y levantar la interfaz en el *Event Dispatch Thread* (EDT).
 * **`conexion`**: Clase `ConexionMySQL.java` encargada de gestionar la conexión JDBC hacia la base de datos `burok_db` en MySQL.
