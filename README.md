@@ -288,25 +288,77 @@ El sistema se organiza en **10 Módulos** integrados en una ventana principal co
 
 ---
 
-## 6. Estructura Planificada del Proyecto (Blueprint — Sin Código Aún)
+## 6. Estructura del Proyecto
 
 ```text
-Burok/
+Burok-TramiteFacilHN/
 ├── ANALISIS_ESTRATEGICO_BUROK_HONDURAS.md
+├── CASOS_DE_USO_PASO_A_PASO.md
 ├── INFORME_PROYECTO_BUROK.md
+├── MANUAL_DE_USUARIO_BUROK.docx
+├── MANUAL_TECNICO_BUROK.docx
 ├── README.md
-└── (Futura Fase 2 - Implementación Java + MySQL)
-    ├── pom.xml (Dependencia mysql-connector-j)
-    ├── database/
-    │   └── schema_burok.sql
-    └── src/main/java/
-        ├── main/Main.java
-        ├── conexion/ConexionMySQL.java
-        ├── modelo/...
-        ├── repositorio/...
-        ├── controlador/BurokControlador.java
-        ├── vista/VentanaPrincipal.java
-        ├── vista/CanvasReporte2D.java
-        ├── excepciones/...
-        └── hilos/ProcesoVentanillaHilo.java
+├── pom.xml
+├── lib/
+│   └── mysql-connector-j-8.4.0.jar
+├── database/
+│   └── schema_burok.sql
+└── src/main/java/
+    ├── main/Main.java
+    ├── conexion/ConexionMySQL.java
+    ├── modelo/
+    ├── repositorio/
+    ├── controlador/BurokControlador.java
+    ├── vista/
+    │   ├── TemaBurok.java
+    │   ├── VentanaPrincipal.java
+    │   └── CanvasReporte2D.java
+    ├── excepciones/
+    └── hilos/ProcesoVentanillaHilo.java
 ```
+
+---
+
+## 7. Requisitos, Instalación y Ejecución
+
+### Requisitos previos
+* **Java Development Kit (JDK):** 17 LTS o superior (`java -version`).
+* **MySQL Server:** 8.0 o superior activo en el puerto `3306`.
+* **Conector JDBC:** `lib/mysql-connector-j-8.4.0.jar` (ya incluido en el repositorio) o Maven mediante `pom.xml`.
+* **IDE (opcional):** Apache NetBeans IDE 17+.
+
+### Paso 1: Clonar el repositorio
+```bash
+git clone https://github.com/jomudev/Burok-TramiteFacilHN.git
+cd Burok-TramiteFacilHN
+```
+
+### Paso 2: Crear la base de datos en MySQL
+Ejecuta el script `database/schema_burok.sql` para crear la base `burok_db`, sus 7 tablas y los datos iniciales de prueba:
+```bash
+mysql -u root < database/schema_burok.sql
+```
+*(Si tu usuario `root` tiene contraseña, usa `mysql -u root -p < database/schema_burok.sql` y actualiza `USER` / `PASSWORD` en `src/main/java/conexion/ConexionMySQL.java` antes de compilar).*
+
+### Paso 3: Compilar y ejecutar por terminal
+
+**macOS / Linux:**
+```bash
+mkdir -p bin
+javac -encoding UTF-8 -cp "lib/*" -d bin $(find src/main/java -name "*.java")
+java -cp "bin:lib/*" main.Main
+```
+
+**Windows (PowerShell):**
+```powershell
+New-Item -ItemType Directory -Force -Path bin | Out-Null
+$files = Get-ChildItem -Recurse -Filter *.java src\main\java | ForEach-Object { $_.FullName }
+javac -encoding UTF-8 -cp "lib/*" -d bin $files
+java -cp "bin;lib/*" main.Main
+```
+
+### Opción alternativa: Apache NetBeans IDE
+1. Abrir **Apache NetBeans IDE**.
+2. Ir a **File -> Open Project** y seleccionar la carpeta `Burok-TramiteFacilHN`.
+3. Verificar que el servicio **MySQL** esté corriendo en `localhost:3306`.
+4. Presionar **Run Project** (`F6`).
