@@ -1,6 +1,6 @@
 package repositorio;
 
-import conexion.ConexionMySQL;
+import conexion.ConexionSQLServer;
 import modelo.Emprendedor;
 
 import java.sql.*;
@@ -14,7 +14,7 @@ public class EmprendedorDAO implements RepositorioDAO<Emprendedor> {
     @Override
     public void guardar(Emprendedor e) throws SQLException {
         String sql = "INSERT INTO emprendedores (codigo, nombre_completo, dni, telefono, correo, direccion) VALUES (?, ?, ?, ?, ?, ?)";
-        try (PreparedStatement ps = ConexionMySQL.obtenerConexion().prepareStatement(sql)) {
+        try (PreparedStatement ps = ConexionSQLServer.obtenerConexion().prepareStatement(sql)) {
             ps.setString(1, e.getCodigo());
             ps.setString(2, e.getNombreCompleto());
             ps.setString(3, e.getDni());
@@ -30,7 +30,7 @@ public class EmprendedorDAO implements RepositorioDAO<Emprendedor> {
     public List<Emprendedor> obtenerTodos() throws SQLException {
         List<Emprendedor> lista = new ArrayList<>();
         String sql = "SELECT codigo, nombre_completo, dni, telefono, correo, direccion FROM emprendedores ORDER BY codigo";
-        try (Statement st = ConexionMySQL.obtenerConexion().createStatement();
+        try (Statement st = ConexionSQLServer.obtenerConexion().createStatement();
              ResultSet rs = st.executeQuery(sql)) {
             while (rs.next()) {
                 lista.add(mapear(rs));
@@ -42,7 +42,7 @@ public class EmprendedorDAO implements RepositorioDAO<Emprendedor> {
     @Override
     public Emprendedor buscarPorCodigo(String codigo) throws SQLException {
         String sql = "SELECT codigo, nombre_completo, dni, telefono, correo, direccion FROM emprendedores WHERE codigo = ?";
-        try (PreparedStatement ps = ConexionMySQL.obtenerConexion().prepareStatement(sql)) {
+        try (PreparedStatement ps = ConexionSQLServer.obtenerConexion().prepareStatement(sql)) {
             ps.setString(1, codigo);
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
@@ -56,7 +56,7 @@ public class EmprendedorDAO implements RepositorioDAO<Emprendedor> {
     @Override
     public void actualizar(Emprendedor e) throws SQLException {
         String sql = "UPDATE emprendedores SET nombre_completo = ?, dni = ?, telefono = ?, correo = ?, direccion = ? WHERE codigo = ?";
-        try (PreparedStatement ps = ConexionMySQL.obtenerConexion().prepareStatement(sql)) {
+        try (PreparedStatement ps = ConexionSQLServer.obtenerConexion().prepareStatement(sql)) {
             ps.setString(1, e.getNombreCompleto());
             ps.setString(2, e.getDni());
             ps.setString(3, e.getTelefono());
@@ -70,7 +70,7 @@ public class EmprendedorDAO implements RepositorioDAO<Emprendedor> {
     @Override
     public void eliminar(String codigo) throws SQLException {
         String sql = "DELETE FROM emprendedores WHERE codigo = ?";
-        try (PreparedStatement ps = ConexionMySQL.obtenerConexion().prepareStatement(sql)) {
+        try (PreparedStatement ps = ConexionSQLServer.obtenerConexion().prepareStatement(sql)) {
             ps.setString(1, codigo);
             ps.executeUpdate();
         }

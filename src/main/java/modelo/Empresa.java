@@ -1,4 +1,4 @@
-package modelo;
+    package modelo;
 
 public class Empresa {
     private String codigo;

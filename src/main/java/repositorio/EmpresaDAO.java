@@ -1,6 +1,6 @@
 package repositorio;
 
-import conexion.ConexionMySQL;
+import conexion.ConexionSQLServer;
 import modelo.Emprendedor;
 import modelo.Empresa;
 
@@ -22,7 +22,7 @@ public class EmpresaDAO implements RepositorioDAO<Empresa> {
     @Override
     public void guardar(Empresa emp) throws SQLException {
         String sql = "INSERT INTO empresas (codigo, nombre_comercial, rtn, forma_juridica, codigo_ciiu, categoria_riesgo, municipio, capital_semilla, emprendedor_codigo) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
-        try (PreparedStatement ps = ConexionMySQL.obtenerConexion().prepareStatement(sql)) {
+        try (PreparedStatement ps = ConexionSQLServer.obtenerConexion().prepareStatement(sql)) {
             ps.setString(1, emp.getCodigo());
             ps.setString(2, emp.getNombreComercial());
             ps.setString(3, emp.getRtn());
@@ -46,7 +46,7 @@ public class EmpresaDAO implements RepositorioDAO<Empresa> {
         }
 
         String sql = "SELECT codigo, nombre_comercial, rtn, forma_juridica, codigo_ciiu, categoria_riesgo, municipio, capital_semilla, emprendedor_codigo FROM empresas ORDER BY codigo";
-        try (Statement st = ConexionMySQL.obtenerConexion().createStatement();
+        try (Statement st = ConexionSQLServer.obtenerConexion().createStatement();
              ResultSet rs = st.executeQuery(sql)) {
             while (rs.next()) {
                 Emprendedor prop = cachePropietarios.get(rs.getString("emprendedor_codigo"));
@@ -59,7 +59,7 @@ public class EmpresaDAO implements RepositorioDAO<Empresa> {
     @Override
     public Empresa buscarPorCodigo(String codigo) throws SQLException {
         String sql = "SELECT codigo, nombre_comercial, rtn, forma_juridica, codigo_ciiu, categoria_riesgo, municipio, capital_semilla, emprendedor_codigo FROM empresas WHERE codigo = ?";
-        try (PreparedStatement ps = ConexionMySQL.obtenerConexion().prepareStatement(sql)) {
+        try (PreparedStatement ps = ConexionSQLServer.obtenerConexion().prepareStatement(sql)) {
             ps.setString(1, codigo);
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
@@ -74,7 +74,7 @@ public class EmpresaDAO implements RepositorioDAO<Empresa> {
     @Override
     public void actualizar(Empresa emp) throws SQLException {
         String sql = "UPDATE empresas SET nombre_comercial = ?, rtn = ?, forma_juridica = ?, codigo_ciiu = ?, categoria_riesgo = ?, municipio = ?, capital_semilla = ?, emprendedor_codigo = ? WHERE codigo = ?";
-        try (PreparedStatement ps = ConexionMySQL.obtenerConexion().prepareStatement(sql)) {
+        try (PreparedStatement ps = ConexionSQLServer.obtenerConexion().prepareStatement(sql)) {
             ps.setString(1, emp.getNombreComercial());
             ps.setString(2, emp.getRtn());
             ps.setString(3, emp.getFormaJuridica());
@@ -91,7 +91,7 @@ public class EmpresaDAO implements RepositorioDAO<Empresa> {
     @Override
     public void eliminar(String codigo) throws SQLException {
         String sql = "DELETE FROM empresas WHERE codigo = ?";
-        try (PreparedStatement ps = ConexionMySQL.obtenerConexion().prepareStatement(sql)) {
+        try (PreparedStatement ps = ConexionSQLServer.obtenerConexion().prepareStatement(sql)) {
             ps.setString(1, codigo);
             ps.executeUpdate();
         }

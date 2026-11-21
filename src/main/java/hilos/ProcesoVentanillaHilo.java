@@ -41,7 +41,7 @@ public class ProcesoVentanillaHilo implements Runnable {
                 "7/10 · Evaluando categorización ambiental MiAmbiente (Cat. 1)...",
                 "8/10 · Verificando licencia sanitaria en plataforma ARSA...",
                 "9/10 · Aplicando Silencio Administrativo Positivo donde excede SLA...",
-                "10/10 · Consolidando expediente y guardando en MySQL..."
+                "10/10 · Consolidando expediente y guardando en SQL Server..."
         };
 
         try {
@@ -87,7 +87,7 @@ public class ProcesoVentanillaHilo implements Runnable {
         } catch (Exception ex) {
             SwingUtilities.invokeLater(() -> {
                 expediente.setEnProceso(false);
-                listener.onError("Error al persistir avance en MySQL: " + ex.getMessage());
+                listener.onError("Error al persistir avance en SQL Server: " + ex.getMessage());
             });
         }
     }

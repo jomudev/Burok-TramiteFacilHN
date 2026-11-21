@@ -4,7 +4,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 /**
- * Interfaz genérica DAO/Repositorio para persistencia en MySQL.
+ * Interfaz genérica DAO/Repositorio para persistencia en SQL Server.
  */
 public interface RepositorioDAO<T> {
     void guardar(T entidad) throws SQLException;

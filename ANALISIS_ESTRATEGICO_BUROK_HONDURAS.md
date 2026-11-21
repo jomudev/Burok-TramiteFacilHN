@@ -41,14 +41,14 @@ En lugar de intentar modelar las 298 municipalidades el día 1, Burok concentra 
 
 ---
 
-## 4. Estrategia Técnica del Demo: Stack **Java + MySQL**
+## 4. Estrategia Técnica del Demo: Stack **Java + SQL Server**
 
-Para la fase de **Demo Funcional y Validación**, se ha definido estrictamente un stack de dos tecnologías: **Java (Swing Desktop + JDBC)** y **MySQL**, siguiendo el patrón arquitectónico **MVC** probado en `AutoTechSolutions`.
+Para la fase de **Demo Funcional y Validación**, se ha definido estrictamente un stack de dos tecnologías: **Java (Swing Desktop + JDBC)** y **SQL Server**, siguiendo el patrón arquitectónico **MVC** probado en `AutoTechSolutions`.
 
-### ¿Por qué Java + MySQL para el Demo en Honduras?
-1. **Despliegue inmediato y sin fricción de infraestructura:** Muchas oficinas contables, cámaras de comercio regionales y ventanillas municipales en Honduras operan en PCs con Windows/Linux y conectividad intermitente. Una aplicación Java Swing conectada a MySQL (local o en red LAN) funciona con latencia cero.
-2. **Integridad relacional real:** A diferencia de una demo en memoria RAM, MySQL permite demostrar persistencia real de expedientes, catálogos CIIU, matrices municipales de los municipios piloto, trazabilidad de estados y liquidación de tasas en Lempiras.
-3. **Evolución limpia hacia arquitectura distribuida:** Al encapsular el acceso a datos en una capa DAO/Repositorio y la lógica en Controladores MVC, las mismas reglas de negocio y el esquema MySQL pueden exponerse posteriormente como API REST (Spring Boot) sin reescribir el modelo de dominio.
+### ¿Por qué Java + SQL Server para el Demo en Honduras?
+1. **Despliegue inmediato y sin fricción de infraestructura:** Muchas oficinas contables, cámaras de comercio regionales y ventanillas municipales en Honduras operan en PCs con Windows/Linux y conectividad intermitente. Una aplicación Java Swing conectada a SQL Server (local o en red LAN) funciona con latencia cero.
+2. **Integridad relacional real:** A diferencia de una demo en memoria RAM, SQL Server permite demostrar persistencia real de expedientes, catálogos CIIU, matrices municipales de los municipios piloto, trazabilidad de estados y liquidación de tasas en Lempiras.
+3. **Evolución limpia hacia arquitectura distribuida:** Al encapsular el acceso a datos en una capa DAO/Repositorio y la lógica en Controladores MVC, las mismas reglas de negocio y el esquema SQL Server pueden exponerse posteriormente como API REST (Spring Boot) sin reescribir el modelo de dominio.
 
 ---
 
@@ -57,7 +57,7 @@ Para la fase de **Demo Funcional y Validación**, se ha definido estrictamente u
 | Riesgo | Impacto | Estrategia de Mitigación en Burok |
 | :--- | :--- | :--- |
 | **Falta de APIs abiertas en IP, SAR, MiAmbiente y Alcaldías** | Alto | El sistema no depende de interoperabilidad en tiempo real para el MVP: actúa como **orquestador de expediente, validador previo de requisitos y tracker de SLA**, eliminando rechazos por errores humanos mientras el Estado habilita APIs. |
-| **Cambios en tasas municipales (Plan de Arbitrios anual)** | Medio | Las tasas, tiempos promedio y requisitos se almacenan en tablas parametrizables en MySQL (`municipios`, `tramites_catalogo`, `reglas_ciiu`), actualizables sin recompilar el código Java. |
+| **Cambios en tasas municipales (Plan de Arbitrios anual)** | Medio | Las tasas, tiempos promedio y requisitos se almacenan en tablas parametrizables en SQL Server (`municipios`, `tramites_catalogo`, `reglas_ciiu`), actualizables sin recompilar el código Java. |
 | **Resistencia de gestores tradicionales** | Medio | Posicionar Burok como herramienta de productividad para el propio contador/abogado (multi-cliente), reduciendo sus horas de traslado físico y aumentando su capacidad de atención. |
 | **Informalidad cultural por miedo al costo fiscal** | Alto | Incluir un módulo comparativo transparente que muestre el ahorro en horas (de 1,933 hrs a ruta optimizada) y las ventajas de bancarización y facturación SAR. |
 
@@ -65,7 +65,7 @@ Para la fase de **Demo Funcional y Validación**, se ha definido estrictamente u
 
 ## 6. Hoja de Ruta del Proyecto (Fases)
 
-1. **Fase 1 — Documentación y Diseño (Estado Actual):** Definición estratégica, arquitectura MVC + DAO, modelo entidad-relación MySQL, especificación de los 10 módulos y diseño de pantallas Swing.
-2. **Fase 2 — Demo Funcional (Java + MySQL):** Implementación de la aplicación de escritorio en Java Swing conectada a MySQL vía JDBC, con carga semilla de códigos CIIU, municipios piloto, simulación de hilos (SLA / Silencio Administrativo) y reportes Java 2D.
+1. **Fase 1 — Documentación y Diseño (Estado Actual):** Definición estratégica, arquitectura MVC + DAO, modelo entidad-relación SQL Server, especificación de los 10 módulos y diseño de pantallas Swing.
+2. **Fase 2 — Demo Funcional (Java + SQL Server):** Implementación de la aplicación de escritorio en Java Swing conectada a SQL Server vía JDBC, con carga semilla de códigos CIIU, municipios piloto, simulación de hilos (SLA / Silencio Administrativo) y reportes Java 2D.
 3. **Fase 3 — Piloto con Despachos Contables y Cámaras:** Validación en campo con 5–10 PyMEs reales en Tegucigalpa y San Pedro Sula midiendo la reducción efectiva de rechazos documentales.
-4. **Fase 4 — Escalado Web / GovTech API:** Exposición del núcleo Java + MySQL hacia portales web y conectores institucionales.
+4. **Fase 4 — Escalado Web / GovTech API:** Exposición del núcleo Java + SQL Server hacia portales web y conectores institucionales.

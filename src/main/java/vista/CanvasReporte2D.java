@@ -5,12 +5,6 @@ import java.awt.*;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-/**
- * Lienzo manual Java 2D (Graphics2D + paintComponent) sin librerías externas.
- * Dibuja dos gráficos en tiempo real desde MySQL:
- * 1) Comparativa de Horas Tradicionales vs. Ruta Burok por Entidad.
- * 2) Distribución de Expedientes por Estado.
- */
 public class CanvasReporte2D extends JPanel {
     private Map<String, Integer> horasTradicionales = new LinkedHashMap<>();
     private Map<String, Integer> horasBurok = new LinkedHashMap<>();
@@ -119,7 +113,7 @@ public class CanvasReporte2D extends JPanel {
     private void dibujarGraficoEstados(Graphics2D g2, int x, int y, int w, int h) {
         g2.setColor(TemaBurok.PRIMARY);
         g2.setFont(new Font("SansSerif", Font.BOLD, 14));
-        g2.drawString("Expedientes en MySQL por Estado", x, y + 14);
+        g2.drawString("Expedientes por Estado", x, y + 14);
 
         if (expedientesPorEstado.isEmpty()) return;
 

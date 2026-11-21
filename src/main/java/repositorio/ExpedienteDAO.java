@@ -1,6 +1,6 @@
 package repositorio;
 
-import conexion.ConexionMySQL;
+import conexion.ConexionSQLServer;
 import modelo.*;
 
 import java.sql.*;
@@ -21,7 +21,7 @@ public class ExpedienteDAO implements RepositorioDAO<ExpedienteFormalizacion> {
     @Override
     public void guardar(ExpedienteFormalizacion exp) throws SQLException {
         String sql = "INSERT INTO expedientes (numero_expediente, fecha_creacion, empresa_codigo, horas_tradicionales_est, horas_burok_est, estado_global, liquidado) VALUES (?, ?, ?, ?, ?, ?, ?)";
-        try (PreparedStatement ps = ConexionMySQL.obtenerConexion().prepareStatement(sql)) {
+        try (PreparedStatement ps = ConexionSQLServer.obtenerConexion().prepareStatement(sql)) {
             ps.setString(1, exp.getNumeroExpediente());
             ps.setString(2, exp.getFechaCreacion());
             ps.setString(3, exp.getEmpresa().getCodigo());
@@ -36,12 +36,12 @@ public class ExpedienteDAO implements RepositorioDAO<ExpedienteFormalizacion> {
 
     private void guardarDetallesTramites(ExpedienteFormalizacion exp) throws SQLException {
         String sqlDel = "DELETE FROM expediente_tramites WHERE numero_expediente = ?";
-        try (PreparedStatement psDel = ConexionMySQL.obtenerConexion().prepareStatement(sqlDel)) {
+        try (PreparedStatement psDel = ConexionSQLServer.obtenerConexion().prepareStatement(sqlDel)) {
             psDel.setString(1, exp.getNumeroExpediente());
             psDel.executeUpdate();
         }
         String sqlIns = "INSERT INTO expediente_tramites (numero_expediente, tramite_codigo, dias_transcurridos, estado, silencio_positivo) VALUES (?, ?, ?, ?, ?)";
-        try (PreparedStatement ps = ConexionMySQL.obtenerConexion().prepareStatement(sqlIns)) {
+        try (PreparedStatement ps = ConexionSQLServer.obtenerConexion().prepareStatement(sqlIns)) {
             for (DetalleTramiteExpediente d : exp.getTramites()) {
                 ps.setString(1, exp.getNumeroExpediente());
                 ps.setString(2, d.getTramite().getCodigo());
@@ -67,7 +67,7 @@ public class ExpedienteDAO implements RepositorioDAO<ExpedienteFormalizacion> {
         }
 
         String sql = "SELECT numero_expediente, fecha_creacion, empresa_codigo, horas_tradicionales_est, horas_burok_est, estado_global, liquidado FROM expedientes ORDER BY numero_expediente";
-        try (Statement st = ConexionMySQL.obtenerConexion().createStatement();
+        try (Statement st = ConexionSQLServer.obtenerConexion().createStatement();
              ResultSet rs = st.executeQuery(sql)) {
             while (rs.next()) {
                 Empresa emp = cacheEmpresas.get(rs.getString("empresa_codigo"));
@@ -91,7 +91,7 @@ public class ExpedienteDAO implements RepositorioDAO<ExpedienteFormalizacion> {
     private List<DetalleTramiteExpediente> cargarDetalles(String numExp, Map<String, TramiteCatalogo> cacheTramites) throws SQLException {
         List<DetalleTramiteExpediente> detalles = new ArrayList<>();
         String sql = "SELECT id, tramite_codigo, dias_transcurridos, estado, silencio_positivo FROM expediente_tramites WHERE numero_expediente = ? ORDER BY id";
-        try (PreparedStatement ps = ConexionMySQL.obtenerConexion().prepareStatement(sql)) {
+        try (PreparedStatement ps = ConexionSQLServer.obtenerConexion().prepareStatement(sql)) {
             ps.setString(1, numExp);
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
@@ -124,7 +124,7 @@ public class ExpedienteDAO implements RepositorioDAO<ExpedienteFormalizacion> {
     @Override
     public void actualizar(ExpedienteFormalizacion exp) throws SQLException {
         String sql = "UPDATE expedientes SET estado_global = ?, liquidado = ?, horas_tradicionales_est = ?, horas_burok_est = ? WHERE numero_expediente = ?";
-        try (PreparedStatement ps = ConexionMySQL.obtenerConexion().prepareStatement(sql)) {
+        try (PreparedStatement ps = ConexionSQLServer.obtenerConexion().prepareStatement(sql)) {
             ps.setString(1, exp.getEstadoGlobal().name());
             ps.setBoolean(2, exp.isLiquidado());
             ps.setInt(3, exp.getHorasTradicionalesEst());
@@ -138,7 +138,7 @@ public class ExpedienteDAO implements RepositorioDAO<ExpedienteFormalizacion> {
     @Override
     public void eliminar(String numeroExpediente) throws SQLException {
         String sql = "DELETE FROM expedientes WHERE numero_expediente = ?";
-        try (PreparedStatement ps = ConexionMySQL.obtenerConexion().prepareStatement(sql)) {
+        try (PreparedStatement ps = ConexionSQLServer.obtenerConexion().prepareStatement(sql)) {
             ps.setString(1, numeroExpediente);
             ps.executeUpdate();
         }
@@ -152,7 +152,7 @@ public class ExpedienteDAO implements RepositorioDAO<ExpedienteFormalizacion> {
     public List<RequisitoDocumento> obtenerDocumentosPorEmpresa(String empresaCodigo) throws SQLException {
         List<RequisitoDocumento> docs = new ArrayList<>();
         String sql = "SELECT id, empresa_codigo, codigo_doc, nombre_documento, entidad_emisora, validado FROM expediente_documentos WHERE empresa_codigo = ? ORDER BY codigo_doc";
-        try (PreparedStatement ps = ConexionMySQL.obtenerConexion().prepareStatement(sql)) {
+        try (PreparedStatement ps = ConexionSQLServer.obtenerConexion().prepareStatement(sql)) {
             ps.setString(1, empresaCodigo);
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
@@ -179,7 +179,7 @@ public class ExpedienteDAO implements RepositorioDAO<ExpedienteFormalizacion> {
                 {"DOC-03", "Contrato de Arrendamiento Local", "Privado / Notariado", false},
                 {"DOC-04", "Croquis de Ubicación Catastral", "Propietario", false}
         };
-        try (PreparedStatement ps = ConexionMySQL.obtenerConexion().prepareStatement(sql)) {
+        try (PreparedStatement ps = ConexionSQLServer.obtenerConexion().prepareStatement(sql)) {
             for (Object[] row : base) {
                 ps.setString(1, empresaCodigo);
                 ps.setString(2, (String) row[0]);
@@ -194,7 +194,7 @@ public class ExpedienteDAO implements RepositorioDAO<ExpedienteFormalizacion> {
 
     public void actualizarValidacionDocumento(int idDoc, boolean validado) throws SQLException {
         String sql = "UPDATE expediente_documentos SET validado = ? WHERE id = ?";
-        try (PreparedStatement ps = ConexionMySQL.obtenerConexion().prepareStatement(sql)) {
+        try (PreparedStatement ps = ConexionSQLServer.obtenerConexion().prepareStatement(sql)) {
             ps.setBoolean(1, validado);
             ps.setInt(2, idDoc);
             ps.executeUpdate();

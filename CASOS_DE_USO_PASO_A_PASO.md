@@ -1,21 +1,21 @@
 # Documentación Paso a Paso de Casos de Uso — TrámiteFácil HN (Burok)
 
-Este documento describe el flujo operativo paso a paso de cada caso de uso implementado en el sistema **TrámiteFácil HN (Burok)**, detallando la interacción en la interfaz gráfica (**Java Swing**), la lógica de negocio en `BurokControlador`, las excepciones controladas y la persistencia en **MySQL (`burok_db`)**.
+Este documento describe el flujo operativo paso a paso de cada caso de uso implementado en el sistema **TrámiteFácil HN (Burok)**, detallando la interacción en la interfaz gráfica (**Java Swing**), la lógica de negocio en `BurokControlador`, las excepciones controladas y la persistencia en **SQL Server (`burok_db`)**.
 
 ---
 
-## CU-01: Inicio del Sistema y Verificación de Conexión MySQL
+## CU-01: Inicio del Sistema y Verificación de Conexión SQL Server
 
 * **Actor:** Emprendedor / Gestor Contable / Administrador.
-* **Clases involucradas:** `main.Main`, `vista.VentanaPrincipal`, `conexion.ConexionMySQL`, `controlador.BurokControlador`.
+* **Clases involucradas:** `main.Main`, `vista.VentanaPrincipal`, `conexion.ConexionSQLServer`, `controlador.BurokControlador`.
 
 ### Flujo Paso a Paso
 1. El usuario ejecuta la aplicación (`main.Main`).
 2. `Main.main()` configura el Look & Feel **Nimbus** y lanza `VentanaPrincipal` dentro del *Event Dispatch Thread* (EDT) mediante `SwingUtilities.invokeLater()`.
-3. `VentanaPrincipal` construye la barra superior y llama a `ConexionMySQL.verificarConexion()` hacia `jdbc:mysql://localhost:3306/burok_db`:
-   * Si la conexión es exitosa, la barra superior muestra **`● MySQL Conectado (localhost:3306 / burok_db)`** en verde.
-   * Si falla, muestra **`● MySQL Desconectado`** en rojo.
-4. Se ejecuta `cargarTodosLosDatos()`, consultando en MySQL los emprendedores, empresas, catálogo de trámites, expedientes, documentos del expediente único y liquidaciones, poblando todas las tablas y selectores.
+3. `VentanaPrincipal` construye la barra superior y llama a `ConexionSQLServer.verificarConexion()` hacia `jdbc:sqlserver://localhost:1433;databaseName=burok_db`:
+   * Si la conexión es exitosa, la barra superior muestra **`● SQL Server Conectado (localhost:1433 / burok_db)`** en verde.
+   * Si falla, muestra **`● SQL Server Desconectado`** en rojo.
+4. Se ejecuta `cargarTodosLosDatos()`, consultando en SQL Server los emprendedores, empresas, catálogo de trámites, expedientes, documentos del expediente único y liquidaciones, poblando todas las tablas y selectores.
 5. Se muestra por defecto la vista **Panel principal**.
 
 ---
@@ -27,7 +27,7 @@ Este documento describe el flujo operativo paso a paso de cada caso de uso imple
 * **Clases involucradas:** `vista.VentanaPrincipal`, `controlador.BurokControlador`, `excepciones.EmpresaNoEncontradaException`.
 
 ### Flujo Paso a Paso
-1. El usuario visualiza en la parte superior las **4 tarjetas métricas** calculadas en tiempo real desde MySQL:
+1. El usuario visualiza en la parte superior las **4 tarjetas métricas** calculadas en tiempo real desde SQL Server:
    * *Empresas registradas*
    * *Trámites pendientes*
    * *Trámites completados*
@@ -35,7 +35,7 @@ Este documento describe el flujo operativo paso a paso de cada caso de uso imple
 2. **Filtrado por municipio:** El usuario selecciona un municipio en el selector desplegable (`Distrito Central`, `San Pedro Sula`, `Choloma`, `Villanueva (Cortés)`, `La Ceiba / Roatán` o `Todos los municipios`). La tabla *Lista de Expedientes de Empresas* se actualiza automáticamente mostrando únicamente las empresas de ese municipio junto con su porcentaje de avance y estado global.
 3. **Búsqueda por código de empresa:**
    * El usuario escribe el código (ej. `PYM-001`) en el campo de búsqueda y presiona **`Buscar Código`**.
-   * `BurokControlador.buscarEmpresa(codigo)` consulta MySQL vía `EmpresaDAO`.
+   * `BurokControlador.buscarEmpresa(codigo)` consulta SQL Server vía `EmpresaDAO`.
    * **Resultado exitoso:** Muestra un cuadro de diálogo con el nombre comercial, municipio y RTN.
    * **Flujo alternativo (Error controlado):** Si el código no existe, se lanza `EmpresaNoEncontradaException` y se muestra un aviso `JOptionPane` sin interrumpir la aplicación.
 
@@ -50,11 +50,11 @@ Este documento describe el flujo operativo paso a paso de cada caso de uso imple
 ### Flujo Paso a Paso
 1. El usuario ingresa los datos en el formulario: `Código Emprendedor` (ej. `EMP-003`), `Nombre Completo`, `DNI (RNP)`, `Teléfono`, `Correo` y `Dirección`.
 2. Presiona **`Registrar Emprendedor`**.
-3. `BurokControlador.registrarEmprendedor()` valida que `Código`, `Nombre completo` y `DNI` no estén vacíos y verifica en MySQL que el código no esté duplicado (`emprendedorDAO.existe(codigo)`).
-4. `EmprendedorDAO.guardar()` ejecuta el `INSERT INTO emprendedores` en MySQL y apila el código recién insertado en `historialCodigosInsertados` (`Stack<String>`).
+3. `BurokControlador.registrarEmprendedor()` valida que `Código`, `Nombre completo` y `DNI` no estén vacíos y verifica en SQL Server que el código no esté duplicado (`emprendedorDAO.existe(codigo)`).
+4. `EmprendedorDAO.guardar()` ejecuta el `INSERT INTO emprendedores` en SQL Server y apila el código recién insertado en `historialCodigosInsertados` (`Stack<String>`).
 5. Se recargan las tablas y el selector de propietarios en el formulario de empresas.
 6. **Flujo alternativo — Deshacer (`Undo`):**
-   * Si el usuario presiona **`Deshacer (Undo)`**, `EmprendedorDAO.deshacerUltimoRegistro()` extrae el último código de la pila `Stack` y ejecuta `DELETE FROM emprendedores WHERE codigo = ?`, sincronizando inmediatamente la vista y MySQL.
+   * Si el usuario presiona **`Deshacer (Undo)`**, `EmprendedorDAO.deshacerUltimoRegistro()` extrae el último código de la pila `Stack` y ejecuta `DELETE FROM emprendedores WHERE codigo = ?`, sincronizando inmediatamente la vista y SQL Server.
 
 ---
 
@@ -73,9 +73,9 @@ Este documento describe el flujo operativo paso a paso de cada caso de uso imple
    * `Cat. Riesgo (1-4)` y `Municipio`.
    * `Capital Semilla (L.)` (debe ser numérico y mayor a `L. 0.00`).
 2. Presiona **`Registrar Empresa`**.
-3. `BurokControlador.registrarEmpresa()` valida campos obligatorios, verifica que no exista código duplicado e inserta la empresa en la tabla `empresas` de MySQL mediante `EmpresaDAO.guardar()`.
+3. `BurokControlador.registrarEmpresa()` valida campos obligatorios, verifica que no exista código duplicado e inserta la empresa en la tabla `empresas` de SQL Server mediante `EmpresaDAO.guardar()`.
 4. Automáticamente, `ExpedienteDAO.inicializarDocumentosBaseEmpresa()` crea en la tabla `expediente_documentos` los **4 documentos maestros** base para la empresa (`DOC-01` DNI, `DOC-02` Escritura Pública, `DOC-03` Contrato de Arrendamiento, `DOC-04` Croquis Catastral), evitando que el usuario deba cargarlos por separado para cada institución.
-5. **Flujo alternativo — Deshacer (`Undo`):** Al presionar **`Deshacer (Undo)`** en el panel de empresas, `EmpresaDAO.deshacerUltimoRegistro()` extrae el último código de su `Stack` y elimina el registro de MySQL (eliminando en cascada sus documentos base).
+5. **Flujo alternativo — Deshacer (`Undo`):** Al presionar **`Deshacer (Undo)`** en el panel de empresas, `EmpresaDAO.deshacerUltimoRegistro()` extrae el último código de su `Stack` y elimina el registro de SQL Server (eliminando en cascada sus documentos base).
 
 ---
 
@@ -87,10 +87,10 @@ Este documento describe el flujo operativo paso a paso de cada caso de uso imple
 
 ### Flujo Paso a Paso
 1. En la parte superior derecha de la vista **Trámites y Exp. Único**, el usuario selecciona la empresa en el combo **`Empresa activa`**.
-2. El panel **Expediente Único Digital** consulta la tabla `expediente_documentos` de MySQL y lista los documentos requeridos con su emisor (`RNP`, `Notario / IP`, `Privado`, `Propietario`) y estado (`VALIDADO ✓` o `PENDIENTE`).
+2. El panel **Expediente Único Digital** consulta la tabla `expediente_documentos` de SQL Server y lista los documentos requeridos con su emisor (`RNP`, `Notario / IP`, `Privado`, `Propietario`) y estado (`VALIDADO ✓` o `PENDIENTE`).
 3. El indicador superior muestra el conteo (ej. `2 / 4 validados` en color ámbar si faltan documentos, o `4 / 4 validados` en verde si está completo).
 4. Para validar o invalidar un documento, el usuario selecciona una fila en la tabla y presiona **`Validar / Invalidar Seleccionado`**.
-5. `BurokControlador.cambiarEstadoDocumento()` actualiza el campo `validado` en MySQL y refresca el indicador.
+5. `BurokControlador.cambiarEstadoDocumento()` actualiza el campo `validado` en SQL Server y refresca el indicador.
 6. **Regla de bloqueo:** Si posteriormente se intenta ejecutar la simulación de ventanillas sin tener todos los documentos validados, `verificarDocumentosCompletos()` lanza `DocumentoFaltanteException` detallando exactamente qué documentos faltan.
 
 ---
@@ -103,9 +103,9 @@ Este documento describe el flujo operativo paso a paso de cada caso de uso imple
 
 ### Flujo Paso a Paso
 1. Con una empresa seleccionada en **`Empresa activa`**, el usuario presiona **`Generar / Abrir Expediente`**.
-2. `BurokControlador.generarRutaCritica(empresa)` verifica si la empresa ya posee un expediente en MySQL:
+2. `BurokControlador.generarRutaCritica(empresa)` verifica si la empresa ya posee un expediente en SQL Server:
    * Si ya existe, lo recupera y muestra sus datos.
-   * Si no existe, genera un nuevo código correlativo (`EXP-XXX`), toma los trámites del **Catálogo Regulatorio Nacional** (`tramites_catalogo` en MySQL: IP/Notariado, SAR, Alcaldía/Catastro, Bomberos, MiAmbiente y ARSA), calcula el total de horas tradicionales (`1,933 hrs`) frente a las horas optimizadas Burok (`160 hrs`), y guarda el expediente y su detalle en `expedientes` y `expediente_tramites`.
+   * Si no existe, genera un nuevo código correlativo (`EXP-XXX`), toma los trámites del **Catálogo Regulatorio Nacional** (`tramites_catalogo` en SQL Server: IP/Notariado, SAR, Alcaldía/Catastro, Bomberos, MiAmbiente y ARSA), calcula el total de horas tradicionales (`1,933 hrs`) frente a las horas optimizadas Burok (`160 hrs`), y guarda el expediente y su detalle en `expedientes` y `expediente_tramites`.
 3. En la pantalla se actualizan:
    * Las barras **Progreso por Etapa** (*Apertura*, *Funcionamiento* y *Cierre*).
    * La tabla inferior del **Catálogo Regulatorio Nacional** con horas tradicionales, horas Burok, costo oficial en Lempiras (`L.`) y plazo legal SLA en días.
@@ -125,11 +125,11 @@ Este documento describe el flujo operativo paso a paso de cada caso de uso imple
    * Verifica que el expediente no esté ya siendo procesado (`exp.isEnProceso()`), evitando ejecuciones duplicadas.
    * Invoca `verificarDocumentosCompletos()`: si falta algún documento en el Expediente Único, detiene el proceso y lanza `DocumentoFaltanteException`.
 4. Se deshabilita el botón de inicio y se lanza un hilo independiente (`new Thread(new ProcesoVentanillaHilo(...))`).
-5. Durante **~5.8 segundos** (10 pasos de 580 ms), el hilo recorre las etapas interinstitucionales (`RNP -> IP -> SAR -> Catastro -> Bomberos -> SLA -> MiAmbiente -> ARSA -> Silencio Positivo -> MySQL`), actualizando la `JProgressBar` y la etiqueta de estado en la interfaz mediante `SwingUtilities.invokeLater()` sin congelar la ventana.
+5. Durante **~5.8 segundos** (10 pasos de 580 ms), el hilo recorre las etapas interinstitucionales (`RNP -> IP -> SAR -> Catastro -> Bomberos -> SLA -> MiAmbiente -> ARSA -> Silencio Positivo -> SQL Server`), actualizando la `JProgressBar` y la etiqueta de estado en la interfaz mediante `SwingUtilities.invokeLater()` sin congelar la ventana.
 6. Al finalizar los 10 pasos:
    * Si la empresa es **Categoría de Riesgo 1 (Bajo Impacto)** y el trámite pertenece a **Alcaldía** o **MiAmbiente**, se simula el vencimiento del plazo SLA (`sla + 1` días) y el sistema aplica automáticamente el estado **`SILENCIO_POSITIVO`** (`silencioPositivo = true`).
    * Los demás trámites concluyen como **`APROBADO`**.
-   * El estado global del expediente cambia a **`APROBADO`** y se persisten todos los cambios en `expedientes` y `expediente_tramites` en MySQL.
+   * El estado global del expediente cambia a **`APROBADO`** y se persisten todos los cambios en `expedientes` y `expediente_tramites` en SQL Server.
 7. Se reactiva el botón, se refrescan las métricas del sistema y se notifica al usuario con un `JOptionPane`.
 
 ---
@@ -153,8 +153,8 @@ Este documento describe el flujo operativo paso a paso de cada caso de uso imple
    * Que el monto recibido cubra el total oficial. Si es menor, lanza **`PresupuestoInsuficienteException`** indicando el monto faltante exacto en Lempiras.
 5. Si el pago es válido:
    * Calcula el cambio (`montoRecibido - total`).
-   * Genera el número correlativo `LIQ-XXX` e inserta el registro en la tabla `liquidaciones` de MySQL.
-   * Marca el expediente como `liquidado = true` en MySQL.
+   * Genera el número correlativo `LIQ-XXX` e inserta el registro en la tabla `liquidaciones` de SQL Server.
+   * Marca el expediente como `liquidado = true` en SQL Server.
    * Actualiza la tabla de liquidaciones emitidas y muestra el comprobante en `JOptionPane`.
 
 ---
@@ -167,10 +167,10 @@ Este documento describe el flujo operativo paso a paso de cada caso de uso imple
 
 ### Flujo Paso a Paso
 1. Al ingresar a la pestaña **Reportes y Java 2D** (o tras emitir una liquidación), `VentanaPrincipal` invoca `actualizarGrafico2D()`.
-2. `BurokControlador` consulta en MySQL:
+2. `BurokControlador` consulta en SQL Server:
    * `obtenerHorasTradicionalesPorEntidad()` y `obtenerHorasBurokPorEntidad()` desde `tramites_catalogo`.
    * `obtenerExpedientesPorEstado()` desde `expedientes`.
 3. Se pasan los tres mapas de datos a `CanvasReporte2D.setDatos(...)` y se ejecuta `repaint()`.
 4. `CanvasReporte2D` sobreescribe `paintComponent(Graphics g)` usando **`Graphics2D`** nativo (sin librerías externas) para renderizar dos gráficos de barras lado a lado:
    * **Gráfico izquierdo:** Comparativa visual de *Horas Tradicionales (1,933h)* vs. *Ruta Burok Optimizada* agrupada por entidad reguladora.
-   * **Gráfico derecho:** Conteo en tiempo real de *Expedientes en MySQL por Estado* (`Pendiente`, `En Revisión`, `Silencio Positivo`, `Aprobado`).
+   * **Gráfico derecho:** Conteo en tiempo real de *Expedientes en SQL Server por Estado* (`Pendiente`, `En Revisión`, `Silencio Positivo`, `Aprobado`).

@@ -1,7 +1,7 @@
 # Informe Técnico de Diseño: Sistema Burok (Honduras)
 **Plataforma de Formalización Empresarial y Gestión de Trámites PyME**
 
-**Stack del Demo:** Java (Swing + JDBC) y MySQL  
+**Stack del Demo:** Java (Swing + JDBC) y SQL Server  
 **Patrón de Diseño:** MVC (Modelo - Vista - Controlador) + DAO Genérico  
 **Referencia Estructural:** Patrón de diseño *AutoTechSolutions*  
 
@@ -11,18 +11,18 @@
 
 El proyecto **Burok** responde a una problemática crítica documentada en el mercado hondureño: la formalización de una pequeña o mediana empresa requiere en promedio **1,933 horas**, convirtiéndose en la principal causa de la informalidad laboral y empresarial (>70%), pese a que la operación tributaria anual posterior toma únicamente **242 horas**.
 
-El presente documento especifica la arquitectura, los **10 módulos funcionales**, el diseño detallado de **pantallas (Swing)**, las reglas de negocio y la estrategia de persistencia en **MySQL** para construir un demo funcional robusto sin escribir código fuente todavía.
+El presente documento especifica la arquitectura, los **10 módulos funcionales**, el diseño detallado de **pantallas (Swing)**, las reglas de negocio y la estrategia de persistencia en **SQL Server** para construir un demo funcional robusto sin escribir código fuente todavía.
 
 ---
 
 ## 2. Arquitectura del Software y Organización en Paquetes
 
-Se adopta estrictamente la separación de responsabilidades del patrón **MVC**, incorporando una capa de acceso a datos (**DAO / Repositorio**) conectada a **MySQL**:
+Se adopta estrictamente la separación de responsabilidades del patrón **MVC**, incorporando una capa de acceso a datos (**DAO / Repositorio**) conectada a **SQL Server**:
 
 * **`main`**: Punto de entrada (`Main.java`). Configura el tema visual Nimbus, valida la disponibilidad de la base de datos `burok_db` y lanza `VentanaPrincipal` en el *Event Dispatch Thread* (EDT).
-* **`conexion`**: Clase `ConexionMySQL.java` con patrón Singleton ligero para proveer conexiones JDBC limpias y parametrizadas.
+* **`conexion`**: Clase `ConexionSQLServer.java` con patrón Singleton ligero para proveer conexiones JDBC limpias y parametrizadas.
 * **`modelo`**: Entidades de dominio (`Emprendedor`, `Empresa`, `TramiteCatalogo`, `RequisitoDocumento`, `ExpedienteFormalizacion`, `DetalleTramiteExpediente`, `LiquidacionCostos` y el enum `EstadoTramite`).
-* **`repositorio`**: `RepositorioDAO<T>` con implementaciones MySQL (`EmprendedorDAO`, `EmpresaDAO`, `TramiteDAO`, `ExpedienteDAO`, `LiquidacionDAO`) e integración de `Stack` para deshacer la última acción de registro.
+* **`repositorio`**: `RepositorioDAO<T>` con implementaciones SQL Server (`EmprendedorDAO`, `EmpresaDAO`, `TramiteDAO`, `ExpedienteDAO`, `LiquidacionDAO`) e integración de `Stack` para deshacer la última acción de registro.
 * **`controlador`**: `BurokControlador.java` centraliza las validaciones (DNI, códigos CIIU, montos en Lempiras), la generación de rutas críticas, el control de documentos únicos y el lanzamiento de hilos.
 * **`vista`**: `VentanaPrincipal.java` (`JTabbedPane` con 7 pestañas operativas) y `CanvasReporte2D.java` (renderizado manual con `Graphics2D`).
 * **`excepciones`**: `DocumentoFaltanteException`, `EmpresaNoEncontradaException` y `PresupuestoInsuficienteException`.
@@ -37,7 +37,7 @@ La interfaz principal (`VentanaPrincipal`) utiliza un `JTabbedPane` superior con
 ### Pantalla 1: Gestión de Emprendedores (Módulo 1)
 * **Panel Superior (Formulario):** Campos `Código` (`EMP-XXX`), `Nombre Completo`, `DNI / Identidad` (formato `0801-XXXX-XXXXX`), `Teléfono`, `Correo`, `Dirección`.
 * **Barra de Acciones:** Botones `Registrar`, `Buscar`, `Actualizar`, `Eliminar`, `Deshacer (Undo)`, `Limpiar`.
-* **Panel Inferior (`JTable`):** Listado en tiempo real desde la tabla `emprendedores` de MySQL.
+* **Panel Inferior (`JTable`):** Listado en tiempo real desde la tabla `emprendedores` de SQL Server.
 * **Validaciones:** Campos vacíos, longitud de DNI, prevención de códigos duplicados.
 
 ### Pantalla 2: Empresas y Clasificación CIIU (Módulo 2)
@@ -46,7 +46,7 @@ La interfaz principal (`VentanaPrincipal`) utiliza un `JTabbedPane` superior con
 * **Panel Inferior (`JTable`):** Muestra empresas registradas con su nivel de riesgo y municipio asignado.
 
 ### Pantalla 3: Catálogo Regulatorio Nacional (Módulo 3)
-* **Contenido:** Tabla maestra (`JTable`) sincronizada con `tramites_catalogo` en MySQL que lista los trámites de:
+* **Contenido:** Tabla maestra (`JTable`) sincronizada con `tramites_catalogo` en SQL Server que lista los trámites de:
   * **IP / Notaría:** Escritura Pública y Registro Mercantil (~120 hrs tradicionales / ~24 hrs Burok).
   * **SAR:** RTN Numérico, Oficina Virtual y CAI de Facturación (~180 hrs / ~16 hrs).
   * **Alcaldía Municipal:** Compatibilidad de Uso de Suelo, Inspección de Bomberos y Permiso de Operación (~750 hrs / ~32 hrs).
@@ -78,20 +78,20 @@ La interfaz principal (`VentanaPrincipal`) utiliza un `JTabbedPane` superior con
 ### Pantalla 7: Analítica y Reportes Java 2D (Módulo 7)
 * **Componente:** `CanvasReporte2D` (`JPanel` con `paintComponent(Graphics g)` y `Graphics2D`).
 * **Gráfico 1 (Barras Comparativas):** Horas promedio tradicionales en Honduras (1,933 hrs) vs. Horas optimizadas con Burok por entidad (IP/Notaría, SAR, Alcaldía, MiAmbiente/ARSA).
-* **Gráfico 2 (Barras de Estado):** Cantidad de expedientes almacenados en MySQL agrupados por `PENDIENTE`, `EN_REVISION`, `SILENCIO_POSITIVO` y `APROBADO`.
+* **Gráfico 2 (Barras de Estado):** Cantidad de expedientes almacenados en SQL Server agrupados por `PENDIENTE`, `EN_REVISION`, `SILENCIO_POSITIVO` y `APROBADO`.
 
 ---
 
 ## 4. Cumplimiento de los 10 Módulos Funcionales
 
-1. **Módulo 1 (Emprendedores):** CRUD MySQL + validaciones de identidad y duplicados.
+1. **Módulo 1 (Emprendedores):** CRUD SQL Server + validaciones de identidad y duplicados.
 2. **Módulo 2 (Empresas y CIIU):** Asociación relacional a emprendedor, clasificación de riesgo (1–4) y municipio.
 3. **Módulo 3 (Catálogo Regulatorio):** Base parametrizable de trámites hondureños con costos en Lempiras y tiempos SLA.
 4. **Módulo 4 (Expediente Único):** Reutilización documental cero-duplicidad y validación previa.
 5. **Módulo 5 (Ruta Crítica):** Cálculo automático de secuencia, horas ahorradas y control de estados.
 6. **Módulo 6 (Liquidación Financiera):** Desglose de tasas oficiales y cálculo de impacto sobre capital semilla.
-7. **Módulo 7 (Reportes Java 2D):** Gráficos manuales con `Graphics2D` alimentados por consultas reales de MySQL.
-8. **Módulo 8 (Genéricos y MySQL DAO):** Interfaz genérica `RepositorioDAO<T>` con JDBC y `Stack` para Undo en sesión.
+7. **Módulo 7 (Reportes Java 2D):** Gráficos manuales con `Graphics2D` alimentados por consultas reales de SQL Server.
+8. **Módulo 8 (Genéricos y SQL Server DAO):** Interfaz genérica `RepositorioDAO<T>` con JDBC y `Stack` para Undo en sesión.
 9. **Módulo 9 (Excepciones Personalizadas):** Manejo controlado con `try-catch` y `JOptionPane` para `DocumentoFaltanteException`, `EmpresaNoEncontradaException` y `PresupuestoInsuficienteException`.
 10. **Módulo 10 (Multihilos):** `ProcesoVentanillaHilo` (`Runnable`) para simular ventanillas y Silencio Administrativo Positivo sin bloquear el EDT.
 
@@ -99,4 +99,4 @@ La interfaz principal (`VentanaPrincipal`) utiliza un `JTabbedPane` superior con
 
 ## 5. Conclusión de Diseño
 
-Siguiendo exactamente la disciplina arquitectónica de *AutoTechSolutions* (MVC limpio, genéricos, excepciones de dominio, concurrencia segura en Swing y Java 2D nativo) e incorporando **MySQL** como motor relacional, el proyecto **Burok** queda completamente especificado para iniciar su construcción en la Fase 2 como un demo sólido, auditable y alineado a la realidad regulatoria de Honduras.
+Siguiendo exactamente la disciplina arquitectónica de *AutoTechSolutions* (MVC limpio, genéricos, excepciones de dominio, concurrencia segura en Swing y Java 2D nativo) e incorporando **SQL Server** como motor relacional, el proyecto **Burok** queda completamente especificado para iniciar su construcción en la Fase 2 como un demo sólido, auditable y alineado a la realidad regulatoria de Honduras.

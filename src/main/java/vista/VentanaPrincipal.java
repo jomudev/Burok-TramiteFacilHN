@@ -1,6 +1,6 @@
 package vista;
 
-import conexion.ConexionMySQL;
+import conexion.ConexionSQLServer;
 import controlador.BurokControlador;
 import excepciones.DocumentoFaltanteException;
 import excepciones.EmpresaNoEncontradaException;
@@ -15,10 +15,7 @@ import java.awt.*;
 import java.sql.SQLException;
 import java.util.List;
 
-/**
- * Ventana principal Swing de TrámiteFácil HN (Burok).
- * Implementa el diseño Stitch (Topbar + Sidebar + CardLayout) sobre MVC + MySQL.
- */
+
 public class VentanaPrincipal extends JFrame {
     private final BurokControlador controlador;
     private final CardLayout cardLayout = new CardLayout();
@@ -64,7 +61,7 @@ public class VentanaPrincipal extends JFrame {
 
     public VentanaPrincipal() {
         this.controlador = new BurokControlador();
-        setTitle("TrámiteFácil HN (Burok) · Gestión de Formalización PyME Honduras");
+        setTitle("Burok · Gestión de Formalización PyME Honduras");
         setSize(1280, 820);
         setMinimumSize(new Dimension(1120, 720));
         setLocationRelativeTo(null);
@@ -102,17 +99,17 @@ public class VentanaPrincipal extends JFrame {
                 new EmptyBorder(8, 16, 8, 16)
         ));
 
-        JLabel lblApp = new JLabel("Proyecto: TrámiteFácil HN (Burok)  ·  v1.2.0-MVP (Java 17 + MySQL)");
+        JLabel lblApp = new JLabel("Burok");
         lblApp.setFont(new Font("SansSerif", Font.BOLD, 12));
         lblApp.setForeground(TemaBurok.TEXT_MUTED);
 
-        boolean conectado = ConexionMySQL.verificarConexion();
-        JLabel lblMysql = new JLabel(conectado ? "● MySQL Conectado (localhost:3306 / burok_db)" : "● MySQL Desconectado");
-        lblMysql.setFont(new Font("SansSerif", Font.BOLD, 12));
-        lblMysql.setForeground(conectado ? TemaBurok.SUCCESS : TemaBurok.DANGER);
+        boolean conectado = ConexionSQLServer.verificarConexion();
+        JLabel lblEstadoBD = new JLabel("●" + (conectado ? " Conectado" : "Desconectado"));
+        lblEstadoBD.setFont(new Font("SansSerif", Font.BOLD, 12));
+        lblEstadoBD.setForeground(conectado ? TemaBurok.SUCCESS : TemaBurok.DANGER);
 
         top.add(lblApp, BorderLayout.WEST);
-        top.add(lblMysql, BorderLayout.EAST);
+        top.add(lblEstadoBD, BorderLayout.EAST);
         return top;
     }
 
@@ -129,7 +126,7 @@ public class VentanaPrincipal extends JFrame {
         JPanel brand = new JPanel(new GridLayout(2, 1, 0, 2));
         brand.setOpaque(false);
         brand.setBorder(new EmptyBorder(0, 6, 20, 6));
-        JLabel lblBrand = new JLabel("✦ TrámiteFácil HN");
+        JLabel lblBrand = new JLabel("✦ Burok");
         lblBrand.setFont(new Font("SansSerif", Font.BOLD, 19));
         lblBrand.setForeground(TemaBurok.PRIMARY);
         JLabel lblSub = new JLabel("GESTIÓN PARA PYMES · BUROK");
@@ -142,10 +139,10 @@ public class VentanaPrincipal extends JFrame {
         JPanel nav = new JPanel(new GridLayout(5, 1, 0, 8));
         nav.setOpaque(false);
         btnNavDashboard = crearBotonNav("Panel principal", "PANEL");
-        btnNavEmpresas = crearBotonNav("Mis empresas", "EMPRESAS");
+        btnNavEmpresas = crearBotonNav("Empresas", "EMPRESAS");
         btnNavTramites = crearBotonNav("Trámites y Exp. Único", "TRAMITES");
         btnNavSeguimiento = crearBotonNav("Seguimiento y SLA", "SEGUIMIENTO");
-        btnNavReportes = crearBotonNav("Reportes y Java 2D", "REPORTES");
+        btnNavReportes = crearBotonNav("Reportes", "REPORTES");
 
         nav.add(btnNavDashboard);
         nav.add(btnNavEmpresas);
@@ -158,7 +155,6 @@ public class VentanaPrincipal extends JFrame {
         topWrap.add(brand, BorderLayout.NORTH);
         topWrap.add(nav, BorderLayout.CENTER);
 
-        // Tarjeta Consejo del Sidebar
         JPanel consejo = new JPanel(new BorderLayout(0, 6)) {
             @Override
             protected void paintComponent(Graphics g) {
@@ -214,7 +210,7 @@ public class VentanaPrincipal extends JFrame {
         }
     }
 
-    // --- VISTA 1: PANEL PRINCIPAL ---
+    // PANEL PRINCIPAL
     private JPanel crearVistaDashboard() {
         JPanel p = new JPanel(new BorderLayout(0, 16));
         p.setOpaque(false);
@@ -229,7 +225,7 @@ public class VentanaPrincipal extends JFrame {
         JLabel h2 = new JLabel("¡Hola, emprendedor!");
         h2.setFont(TemaBurok.FONT_DISPLAY);
         h2.setForeground(TemaBurok.PRIMARY);
-        JLabel sub = new JLabel("Resumen de tus empresas registradas en MySQL y avance frente a las 1,933 horas promedio.");
+        JLabel sub = new JLabel("Resumen de tus empresas registradas y avance frente a las 1,933 horas promedio.");
         sub.setFont(TemaBurok.FONT_BODY);
         sub.setForeground(TemaBurok.TEXT_MUTED);
         titulos.add(bread);
@@ -248,16 +244,16 @@ public class VentanaPrincipal extends JFrame {
         // 4 Tarjetas de métricas
         JPanel metricas = new JPanel(new GridLayout(1, 4, 14, 0));
         metricas.setOpaque(false);
-        metricas.add(TemaBurok.crearTarjetaMetrica("Empresas registradas", lblMetricaEmpresas, "MySQL", TemaBurok.PRIMARY_CONTAINER, TemaBurok.PRIMARY));
+        metricas.add(TemaBurok.crearTarjetaMetrica("Empresas registradas", lblMetricaEmpresas, "Registros", TemaBurok.PRIMARY_CONTAINER, TemaBurok.PRIMARY));
         metricas.add(TemaBurok.crearTarjetaMetrica("Trámites pendientes", lblMetricaPendientes, "En cola", TemaBurok.ACCENT_CONTAINER, TemaBurok.ON_ACCENT));
         metricas.add(TemaBurok.crearTarjetaMetrica("Trámites completados", lblMetricaCompletados, "Listos", TemaBurok.SUCCESS_CONTAINER, TemaBurok.ON_SUCCESS));
-        metricas.add(TemaBurok.crearTarjetaMetrica("Horas estimadas Burok", lblMetricaHoras, "-92% tiempo", TemaBurok.PRIMARY_CONTAINER, TemaBurok.HONDURAS_BLUE));
+        metricas.add(TemaBurok.crearTarjetaMetrica("Horas estimadas Burok", lblMetricaHoras, "tiempo", TemaBurok.PRIMARY_CONTAINER, TemaBurok.HONDURAS_BLUE));
 
         // Tabla de Expedientes de Empresas + Filtro
         JPanel cardTabla = TemaBurok.crearTarjeta(new BorderLayout(0, 12));
         JPanel barFiltro = new JPanel(new BorderLayout(10, 0));
         barFiltro.setOpaque(false);
-        JLabel lblTitTbl = new JLabel("Lista de Expedientes de Empresas");
+        JLabel lblTitTbl = new JLabel("Expedientes de Empresas");
         lblTitTbl.setFont(TemaBurok.FONT_HEADLINE);
         lblTitTbl.setForeground(TemaBurok.PRIMARY);
 
@@ -265,12 +261,15 @@ public class VentanaPrincipal extends JFrame {
         controlesFiltro.setOpaque(false);
         txtBuscarEmpresa = new JTextField(16);
         txtBuscarEmpresa.setToolTipText("Buscar por código de empresa");
-        JButton btnBuscar = TemaBurok.crearBotonSecundario("Buscar Código");
+        JButton btnBuscar = TemaBurok.crearBotonSecundario("Buscar x Código");
         btnBuscar.addActionListener(e -> ejecutarBusquedaEmpresa());
+        JButton btnEliminarBusqueda = TemaBurok.crearBotonSecundario("Eliminar Busqueda");
+        btnEliminarBusqueda.addActionListener(e -> eliminarBusquedaEmpresa());
         cmbFiltroMun = new JComboBox<>(new String[]{"Todos los municipios", "Distrito Central (Tegucigalpa)", "San Pedro Sula", "Choloma", "Villanueva (Cortés)", "La Ceiba / Roatán"});
         cmbFiltroMun.addActionListener(e -> refrescarTablaResumen());
         controlesFiltro.add(txtBuscarEmpresa);
         controlesFiltro.add(btnBuscar);
+        controlesFiltro.add(btnEliminarBusqueda);
         controlesFiltro.add(cmbFiltroMun);
 
         barFiltro.add(lblTitTbl, BorderLayout.WEST);
@@ -303,12 +302,12 @@ public class VentanaPrincipal extends JFrame {
         return p;
     }
 
-    // --- VISTA 2: MIS EMPRESAS Y EMPRENDEDORES (MÓDULOS 1, 2, 8) ---
+    // EMPRESAS Y EMPRENDEDORES (MÓDULOS 1, 2, 8)
     private JPanel crearVistaMisEmpresas() {
         JPanel p = new JPanel(new BorderLayout(0, 14));
         p.setOpaque(false);
 
-        JLabel tit = new JLabel("Gestión de Emprendedores y Empresas PyME (MySQL + Stack Undo)");
+        JLabel tit = new JLabel("Gestión de Emprendedores y Empresas PyME");
         tit.setFont(TemaBurok.FONT_HEADLINE);
         tit.setForeground(TemaBurok.PRIMARY);
         p.add(tit, BorderLayout.NORTH);
@@ -465,7 +464,7 @@ public class VentanaPrincipal extends JFrame {
         JPanel cardDocs = TemaBurok.crearTarjeta(new BorderLayout(0, 8));
         JPanel docTop = new JPanel(new BorderLayout());
         docTop.setOpaque(false);
-        JLabel lblDocTit = new JLabel("Expediente Único Digital (Cero Duplicidad)");
+        JLabel lblDocTit = new JLabel("Expediente Único Digital");
         lblDocTit.setFont(TemaBurok.FONT_TITLE);
         lblDocTit.setForeground(TemaBurok.PRIMARY);
         lblEstadoDocs = new JLabel("Seleccione empresa");
@@ -575,7 +574,7 @@ public class VentanaPrincipal extends JFrame {
         p.setOpaque(false);
 
         JPanel topLiq = TemaBurok.crearTarjeta(new BorderLayout(12, 10));
-        JLabel tit = new JLabel("Liquidación Financiera en Lempiras (L.) y Analítica Java 2D");
+        JLabel tit = new JLabel("Liquidación Financiera");
         tit.setFont(TemaBurok.FONT_HEADLINE);
         tit.setForeground(TemaBurok.PRIMARY);
 
@@ -625,7 +624,7 @@ public class VentanaPrincipal extends JFrame {
         return p;
     }
 
-    // --- CARGA Y SINCRONIZACIÓN CON MYSQL ---
+    // --- CARGA Y SINCRONIZACIÓN CON SQL SERVER ---
     private void cargarTodosLosDatos() {
         try {
             refrescarEmprendedores();
@@ -637,7 +636,7 @@ public class VentanaPrincipal extends JFrame {
             actualizarMetricasDashboard();
             actualizarGrafico2D();
         } catch (SQLException ex) {
-            mostrarError("Error al consultar MySQL: " + ex.getMessage());
+            mostrarError("Error al consultar SQL Server: " + ex.getMessage());
         }
     }
 
@@ -802,26 +801,42 @@ public class VentanaPrincipal extends JFrame {
         }
     }
 
-    // --- ACCIONES UI ---
     private void ejecutarBusquedaEmpresa() {
-        String cod = txtBuscarEmpresa.getText().trim();
-        try {
-            Empresa emp = controlador.buscarEmpresa(cod);
-            JOptionPane.showMessageDialog(this,
-                    "Empresa encontrada:\n" + emp.getNombreComercial() + "\nMunicipio: " + emp.getMunicipio() + "\nRTN: " + emp.getRtn(),
-                    "Búsqueda Exitosa", JOptionPane.INFORMATION_MESSAGE);
-        } catch (EmpresaNoEncontradaException ex) {
-            mostrarError(ex.getMessage());
+       try {
+            modelResumenEmpresas.setRowCount(0);
+            String codBusqueda = (String) txtBuscarEmpresa.getText().trim();
+            List<ExpedienteFormalizacion> exps = controlador.listarExpedientes();
+            for (Empresa emp : controlador.listarEmpresas()) {
+                if (codBusqueda.equals("") || !emp.getCodigo().equalsIgnoreCase(codBusqueda)) {
+                    System.out.println("continue" + codBusqueda.equals("") + " " + !emp.getCodigo().equalsIgnoreCase(codBusqueda));
+                    continue;
+                }
+                ExpedienteFormalizacion match = null;
+                for (ExpedienteFormalizacion x : exps) {
+                    if (x.getEmpresa().getCodigo().equals(emp.getCodigo())) {
+                        match = x;
+                        break;
+                    }
+                }
+                String avance = match != null ? match.getPorcentajeAvance() + "% (" + match.getCantidadCompletados() + "/" + match.getTramites().size() + ")" : "Sin iniciar";
+                String estado = match != null ? match.getEstadoGlobal().getEtiqueta() : "Pendiente";
+                modelResumenEmpresas.addRow(new Object[]{emp.getCodigo(), emp.getNombreComercial() + " · RTN: " + emp.getRtn(), emp.getFormaJuridica(), emp.getMunicipio(), emp.getCodigoCIIU(), avance, estado});
+            }
         } catch (SQLException ex) {
-            mostrarError("Error MySQL: " + ex.getMessage());
+            mostrarError("Error al filtrar empresas: " + ex.getMessage());
         }
+    }
+    
+    private void eliminarBusquedaEmpresa() {
+        txtBuscarEmpresa.setText("");
+        refrescarTablaResumen();
     }
 
     private void registrarEmprendedorUI() {
         try {
             controlador.registrarEmprendedor(txtEmpCod.getText(), txtEmpNom.getText(), txtEmpDni.getText(), txtEmpTel.getText(), txtEmpCorreo.getText(), txtEmpDir.getText());
             cargarTodosLosDatos();
-            JOptionPane.showMessageDialog(this, "Emprendedor guardado en MySQL correctamente.");
+            JOptionPane.showMessageDialog(this, "Emprendedor guardado en SQL Server correctamente.");
         } catch (Exception ex) {
             mostrarError(ex.getMessage());
         }
@@ -851,7 +866,7 @@ public class VentanaPrincipal extends JFrame {
                     cap, (Emprendedor) cmbPymProp.getSelectedItem()
             );
             cargarTodosLosDatos();
-            JOptionPane.showMessageDialog(this, "Empresa registrada en MySQL con su Expediente Único inicializado.");
+            JOptionPane.showMessageDialog(this, "Empresa registrada en SQL Server con su Expediente Único inicializado.");
         } catch (NumberFormatException ex) {
             mostrarError("El capital semilla debe ser un número válido.");
         } catch (Exception ex) {
@@ -917,7 +932,7 @@ public class VentanaPrincipal extends JFrame {
                 @Override
                 public void onFinalizado(ExpedienteFormalizacion finalizado) {
                     btnIniciarHilo.setEnabled(true);
-                    lblEstadoHilo.setText("Simulación completada: Expediente " + finalizado.getNumeroExpediente() + " actualizado en MySQL.");
+                    lblEstadoHilo.setText("Simulación completada: Expediente " + finalizado.getNumeroExpediente() + " actualizado en SQL Server.");
                     cargarTodosLosDatos();
                     JOptionPane.showMessageDialog(VentanaPrincipal.this,
                             "Flujo interinstitucional completado para " + finalizado.getNumeroExpediente() +

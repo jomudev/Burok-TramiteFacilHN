@@ -8,7 +8,7 @@ import java.awt.*;
 
 /**
  * Paleta y componentes visuales oficiales del sistema de diseño
- * TrámiteFácil HN (Burok) extraído de Stitch.
+ *
  */
 public class TemaBurok {
     // Colores principales
