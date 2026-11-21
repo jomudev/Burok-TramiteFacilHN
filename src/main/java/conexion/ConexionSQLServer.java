@@ -4,9 +4,6 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
-/**
- * Gestor de conexión JDBC hacia Microsoft SQL Server (burok_db).
- */
 public class ConexionSQLServer {
 
     private static final String URL = "jdbc:sqlserver://localhost:1433;databaseName=burok_db;encrypt=true;trustServerCertificate=true;";

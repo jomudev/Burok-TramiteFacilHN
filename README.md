@@ -1,8 +1,8 @@
 # Burok - Sistema de Gestión y Simulación de Formalización Empresarial (Honduras)
 
-**Stack Tecnológico (Demo):** Java (Swing + JDBC) + SQL Server  
-**Patrón Arquitectónico:** Modelo-Vista-Controlador (MVC) + Capa DAO/Repositorio  
-**Estado:** Demo Funcional MVP (Java 17 + SQL Server)
+**Stack Tecnológico:** Java (Swing + JDBC) + Microsoft SQL Server  
+**Patrón Arquitectónico:** Modelo-Vista-Controlador (MVC) + Capa DAO  
+**Estado:** Versión 1.2.0 (Java 17 + SQL Server)
 
 ---
 

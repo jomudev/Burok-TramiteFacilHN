@@ -7,9 +7,8 @@ import modelo.ExpedienteFormalizacion;
 import javax.swing.SwingUtilities;
 
 /**
- * Hilo en segundo plano (Runnable) que simula el flujo interinstitucional
- * (IP -> SAR -> Alcaldía -> MiAmbiente/ARSA) y aplica Silencio Administrativo Positivo
- * cuando una entidad excede el plazo SLA en empresas de Categoría 1.
+ * Simula el avance de trámites entre instituciones y aplica silencio
+ * administrativo positivo cuando una entidad supera su plazo en Categoría 1.
  */
 public class ProcesoVentanillaHilo implements Runnable {
 

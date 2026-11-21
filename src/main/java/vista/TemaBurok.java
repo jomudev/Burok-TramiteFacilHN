@@ -7,8 +7,7 @@ import javax.swing.table.JTableHeader;
 import java.awt.*;
 
 /**
- * Paleta y componentes visuales oficiales del sistema de diseño
- *
+ * Paleta de colores, fuentes y utilidades visuales de Burok.
  */
 public class TemaBurok {
     // Colores principales

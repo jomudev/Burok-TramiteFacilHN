@@ -126,10 +126,10 @@ public class VentanaPrincipal extends JFrame {
         JPanel brand = new JPanel(new GridLayout(2, 1, 0, 2));
         brand.setOpaque(false);
         brand.setBorder(new EmptyBorder(0, 6, 20, 6));
-        JLabel lblBrand = new JLabel("✦ Burok");
+        JLabel lblBrand = new JLabel("Burok");
         lblBrand.setFont(new Font("SansSerif", Font.BOLD, 19));
         lblBrand.setForeground(TemaBurok.PRIMARY);
-        JLabel lblSub = new JLabel("GESTIÓN PARA PYMES · BUROK");
+        JLabel lblSub = new JLabel("GESTIÓN PARA PYMES · HONDURAS");
         lblSub.setFont(new Font("SansSerif", Font.BOLD, 10));
         lblSub.setForeground(TemaBurok.HONDURAS_BLUE);
         brand.add(lblBrand);
@@ -286,8 +286,8 @@ public class VentanaPrincipal extends JFrame {
         JButton btnIrTramites = new JButton("Ir a Ruta Crítica →");
         btnIrTramites.addActionListener(e -> mostrarVista("TRAMITES", btnNavTramites));
         JPanel banner = TemaBurok.crearBannerAccion(
-                "Un paso a la vez ✨",
-                "El Índice de Burocracia 2026 estima 1,933 horas para formalizar una PyME en Honduras. Burok optimiza tu ruta crítica.",
+                "Un paso a la vez",
+                "En Honduras abrir una PyME toma alrededor de 1,933 horas. Burok ordena tus trámites para reducir ese tiempo.",
                 btnIrTramites
         );
 
@@ -518,13 +518,13 @@ public class VentanaPrincipal extends JFrame {
         return p;
     }
 
-    // --- VISTA 4: SEGUIMIENTO SLA Y MULTIHILO (MÓDULOS 5 Y 10) ---
+    // SEGUIMIENTO SLA Y MULTIHILO
     private JPanel crearVistaSeguimiento() {
         JPanel p = new JPanel(new BorderLayout(0, 14));
         p.setOpaque(false);
 
         JPanel top = TemaBurok.crearTarjeta(new BorderLayout(12, 10));
-        JLabel tit = new JLabel("Simulador Interinstitucional y Silencio Administrativo Positivo (Multihilo)");
+        JLabel tit = new JLabel("Simulador Interinstitucional y Silencio Administrativo Positivo ");
         tit.setFont(TemaBurok.FONT_HEADLINE);
         tit.setForeground(TemaBurok.PRIMARY);
 
@@ -532,7 +532,7 @@ public class VentanaPrincipal extends JFrame {
         ctrl.setOpaque(false);
         cmbExpSeguimiento = new JComboBox<>();
         cmbExpSeguimiento.addActionListener(e -> refrescarTablaSeguimiento());
-        btnIniciarHilo = TemaBurok.crearBotonPrimario("Simular Ventanillas y SLA (>= 5 seg)");
+        btnIniciarHilo = TemaBurok.crearBotonPrimario("Simular Ventanillas y SLA");
         btnIniciarHilo.addActionListener(e -> ejecutarHiloVentanillaUI());
         ctrl.add(new JLabel("Expediente:"));
         ctrl.add(cmbExpSeguimiento);
